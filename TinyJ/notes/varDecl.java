@@ -1,67 +1,70 @@
-/* 
- * EBNF for varDecl - it just handles parsing of variable declaration 
- * varDecl is NOT the starting non-terminal (<program> is)
- * (whether or not you declared it properly) 
- * 
- * // this non-terminal (production) is already defined (we have to implement singlevarDecl tho)
- * <varDecl> ::== (int <singleVarDecl>) {',' <singleVarDecl>} ; | SCANNER IDENTIFIER = new SCANNER '(' System . in ')' ;
- * 
- * 
- * */
+/*
+ * EBNF specification (prod) for varDecl's grammar:
+ * <varDecl> ::== int <singleVarDecl> {, <singleVarDecl} ; | 
+ * Scanner IDENTIFIER = new SCANNER '(' System . in ')' ;
+ */
 
- public static void varDecl() throws SourceFileErrorException {
+ private static void varDecl() throws SourceFileErrorException {
 
-    // increment size of parse tree - indicates we're building the parse tree
+    // first print we're parsing this symbol for the tree idk
+    TJ.output.printSymbol(NTvarDecl);
+
+    // increment parse tree size
     TJ.output.incTreeDepth();
 
-    // check if token is an int (no apostrophes for reserved word)
-    if (getCurrentToken() == int)
+
+    // handle int variables declarations
+
+    if (getCurrentToken() == INT)
     {
-        // go to next token since we know it's an int
+        // skip to next token which is identifier
         nextToken();
-        // make a call to a non-terminal <singleVarDecl> which handles creation of a variable
         singleVarDecl();
-    }
-
-    // but we can have more variable declarations, so we need to check for a comma
-
-    while (getCurrentToken() == COMMA){
-        nextToken();
-        singleVarDecl(); // do until no more integer variables to be declared
-    }
-    // finish with semicolon
-    accept(SEMICOLON);
-
-
-    // now we check for the non terminal after the | - the SCANNER object
-    if (getCurrentToken() == SCANNER)
-    {
-        // same as int, move to next token
-        nextToken();
-        // we accept the IDENTIFIER 
-        accept(IDENT);
-        else{ 
-            throw new SourceFileErrorException('Where is the scanner name bro?'); // need the new when throwing exceptions
+        while (getCurrentToken == COMMA)
+        {
+            nextToken();
+            singleVarDecl();
         }
-        // then we complete the rest of the creation of the scanner object using accept statements
-        accept(BECOMES); // equivalent to = this is important. remember that!
-        accept(NEW);
-        accept(SCANNER);
-        accept(LPAREN); // left paranthesis
-        // for system. in 
-        accept(SYSTEM); 
-        accept(DOT);
-        accept(IN);
-        accept(RPAREN); // right paranthesis
         accept(SEMICOLON);
+
+        // deal with scanners objects now 
+
+        if (getCurrentToken() == SCANNER)
+        {
+            nextToken() // advanced to next token and validate rest of string
+            // now we to check if we get a proper identifier passed for the scanner object
+            if (getCurrentToken == IDENT) {
+                nextToken(); // we can just move on to the equality sign if the identifier for the scanner object is valid
+            }
+            else{
+                throw new SourceFileErrorException("Not a valid Scanner identifier name.")
+            }
+            accept(BECOMES); // assignment / equals sign
+            accept(NEW);
+            accept(SCANNER);
+            // open paranthesis
+            accept(LPAREN);
+            accept(SYSTEM);
+            accept(DOT);
+            accept(IN);
+            accept(RPAREN);
+            // close paranthesis
+            // just need ending semi colon now;
+            accept(SEMICOLON); 
+            
+        }
+        else{
+            throw new SourceFileErrorException("Not an int var or Scanner object");
+        }
+
+        TJ.output.decTreeDepth();
+
+
+
     }
 
-    else{
-        throw new SourceFileErrorException('not an int or scanner');
-    }
 
-    // decrement size of parse tree
-    TJ.output.decTreeDepth();
- }
 
- // Done!
+
+
+}
