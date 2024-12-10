@@ -1,0 +1,5 @@
+// allows for declaration of a variable
+# first part u can declare as many variables as u want
+EBNF for var_decl
+
+<var_decl> = <simpl_var> {',' <simple_var} ';' | Scanner IDENTIFIER = new Scanner '(' System . in ')' ; 
