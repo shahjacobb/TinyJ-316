@@ -3,75 +3,65 @@
  * varDecl is NOT the starting non-terminal (<program> is)
  * (whether or not you declared it properly) 
  * 
- * <varDecl> ::= (singleVarDecl) {, singleVarDecl} |
- * Scanner IDENTIFIER ::= new Scanner '(' System . in ')' ;  
+ * // this non-terminal (production) is already defined (we have to implement singlevarDecl tho)
+ * <varDecl> ::== (int <singleVarDecl>) {',' <singleVarDecl>} ; | SCANNER IDENTIFIER = new SCANNER '(' System . in ')' ;
+ * 
+ * 
  * */
 
- private static void varDecl() throws SourceFileErrorException{
+ public static void varDecl() throws SourceFileErrorException {
 
-    // increases tree depth of parse tree each time
-    TJ.output.printSymbol(NTvarDecl);
+    // increment size of parse tree - indicates we're building the parse tree
     TJ.output.incTreeDepth();
 
-    // corresponding to the first part for var declarations - if after tokenization we get an int,
-    // we call call nextToken and call singleVarDec to create a single variable declaration
-    if (getCurrentToken() == int) {
-        nextToken();
-        singleVarDecl();
-        // then afterwards, we need to check if there's more variable declarations, 
-        // so we check for commas
-        while (getCurrentToken() == comma)
-        {   // same thing here, call nextToken and create another single variable
-            nextToken();
-            singleVarDecl();
-        }
-        // to finish the statement, we need a semi colon:
-        accept(SEIMICOLON);
-
-    }
-
-    else if (getCurrentToken() == Scanner)
+    // check if token is an int (no apostrophes for reserved word)
+    if (getCurrentToken() == int)
     {
+        // go to next token since we know it's an int
         nextToken();
-        // IDENT == IDENTIFIER
-        if (getCurrentToken() == IDENT)
-        {
-            accept(IDENT);
+        // make a call to a non-terminal <singleVarDecl> which handles creation of a variable
+        singleVarDecl();
+    }
 
+    // but we can have more variable declarations, so we need to check for a comma
+
+    while (getCurrentToken() == COMMA){
+        nextToken();
+        singleVarDecl(); // do until no more integer variables to be declared
+    }
+    // finish with semicolon
+    accept(SEMICOLON);
+
+
+    // now we check for the non terminal after the | - the SCANNER object
+    if (getCurrentToken() == SCANNER)
+    {
+        // same as int, move to next token
+        nextToken();
+        // we accept the IDENTIFIER 
+        accept(IDENT);
+        else{ 
+            throw new SourceFileErrorException('Where is the scanner name bro?'); // need the new when throwing exceptions
         }
-        else throw new SourceFileExceptionError("expected name of scanner");
-        // just like we accepted a comma for eac 
-        accept(BECOMES); // idk wtf this is
-        accept(NEW); // new keyword
-        accept(SCANNER); // scanner class
+        // then we complete the rest of the creation of the scanner object using accept statements
+        accept(BECOMES); // equivalent to = this is important. remember that!
+        accept(NEW);
+        accept(SCANNER);
         accept(LPAREN); // left paranthesis
-        accept(SYSTEM); // System class for std in
-        accept(DOT); . // dot in System.in
-        accept(IN); // input in system.in
+        // for system. in 
+        accept(SYSTEM); 
+        accept(DOT);
+        accept(IN);
         accept(RPAREN); // right paranthesis
-        accept(SEIMICOLON); // to end statement like before
-
-        
+        accept(SEMICOLON);
     }
 
-    // otherwise, if getCurrentToken() doesn't get INT or Scanner, we throw a SourceFileErrorException
     else{
-        throw new SourceFileErrorException("Need an int or scanner.")
+        throw new SourceFileErrorException('not an int or scanner');
     }
 
-    // decreases tree depth here for some reason
-    TJ.out.decTreeDepth();
-    
+    // decrement size of parse tree
+    TJ.output.decTreeDepth();
  }
 
-// Questions 
- /* 
- what's the difference between getCurrentToken() and nextToken()?
- when do we use either method and when?
- why do we increment tree depth in beginning?
- what is sourcefileexception error?
- what does accept(keyword/token) do?
- why do all the accepts for the scanner class not go in the if(getcurrentToken == SCANNER) block?
- */ 
-  
-
+ // Done!
